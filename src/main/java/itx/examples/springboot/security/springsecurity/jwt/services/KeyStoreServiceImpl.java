@@ -13,6 +13,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Implementation of the KeyStoreService interface. This service manages user keys using a Java KeyStore
+ * and an in-memory cache.  It's responsible for loading the keystore, retrieving the CA key,
+ * generating and caching user keys, and removing user keys from the cache.  Note that this
+ * implementation uses an in-memory cache, which is not suitable for a production environment
+ * where persistence is required.
+ */
 @Service
 public class KeyStoreServiceImpl implements KeyStoreService {
 
@@ -21,6 +28,12 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     private final Map<UserId, KeyPair> keyCache;
     private final KeyPairGenerator keyPairGenerator;
 
+    /**
+     * Constructs a new KeyStoreServiceImpl instance. This constructor attempts to load the keystore
+     * from the "keystore.jks" file located in the classpath and initializes the CA key and key generator.
+     * If any error occurs during initialization, a KeyStoreInitializationException is thrown.
+     * @throws KeyStoreInitializationException If an error occurs during keystore initialization.
+     */
     public KeyStoreServiceImpl() throws KeyStoreInitializationException {
         try {
             keystore = KeyStore.getInstance("JKS");
@@ -36,11 +49,20 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         }
     }
 
+    /**
+     * Retrieves the Certificate Authority (CA) key.
+     * @return The CA's private key.
+     */
     @Override
     public Key getCertificationAuthorityKey() {
         return caKey;
     }
 
+    /**
+     * Creates a new key pair for the given user and caches the private key.
+     * @param userId The ID of the user.
+     * @return The user's private key.
+     */
     @Override
     public Key createUserKey(UserId userId) {
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -49,6 +71,11 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         return keyPair.getPrivate();
     }
 
+    /**
+     * Retrieves the user's private key from the cache.
+     * @param userId The ID of the user.
+     * @return An Optional containing the user's private key if found; otherwise, Optional.empty().
+     */
     @Override
     public Optional<Key> getUserKey(UserId userId) {
         KeyPair pair = keyCache.get(userId);
@@ -59,6 +86,11 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         }
     }
 
+    /**
+     * Removes the user's private key from the cache.
+     * @param userId The ID of the user.
+     * @return True if the key was removed, false otherwise.
+     */
     @Override
     public boolean removeUserKey(UserId userId) {
         return keyCache.remove(userId) != null;

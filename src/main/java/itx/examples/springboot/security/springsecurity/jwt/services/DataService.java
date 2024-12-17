@@ -4,14 +4,15 @@ package itx.examples.springboot.security.springsecurity.jwt.services;
 import itx.examples.springboot.security.springsecurity.jwt.services.dto.ServerData;
 
 /**
- * Service providing protected data.
+ * Service interface for retrieving secured data.  This interface defines a single method
+ * for retrieving data, where access control is handled by the calling component.
  */
 public interface DataService {
 
     /**
-     * Get data for source.
-     * @param source source identifier or name.
-     * @return
+     * Retrieves secured data based on the provided source identifier.
+     * @param source The identifier or name of the data source.
+     * @return A ServerData object containing the retrieved data.
      */
     ServerData getSecuredData(String source);
 

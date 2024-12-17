@@ -27,6 +27,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the UserAccessService interface. This service handles user login, JWT validation,
+ * and logout.  It uses an in-memory map for user data and the KeyStoreService for key management.
+ * Note that the in-memory user data storage is not suitable for production environments; a persistent
+ * store should be used instead.
+ */
 @Service
 public class UserAccessServiceImpl implements UserAccessService {
 
@@ -35,6 +41,10 @@ public class UserAccessServiceImpl implements UserAccessService {
     private final KeyStoreService keyStoreService;
     private final Map<UserId, UserData> users;
 
+    /**
+     * Constructs a new UserAccessServiceImpl instance.
+     * @param keyStoreService The KeyStoreService to use for key management.
+     */
     @Autowired
     public UserAccessServiceImpl(KeyStoreService keyStoreService) {
         this.keyStoreService = keyStoreService;
@@ -45,6 +55,9 @@ public class UserAccessServiceImpl implements UserAccessService {
         this.users.put(UserId.from("zorg"), new UserData(UserId.from("zorg"), Password.from("secret"), "ROLE_SUPER_ADMIN", "SUPER_ADMIN_AUTHORITY", "WRITE"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<UserData> login(LoginRequest loginRequest) {
         UserId userId = loginRequest.getUserId();
@@ -71,6 +84,9 @@ public class UserAccessServiceImpl implements UserAccessService {
         return Optional.empty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Jws<Claims>> validate(JWToken jwToken) {
         try {
@@ -97,6 +113,9 @@ public class UserAccessServiceImpl implements UserAccessService {
         return Optional.empty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean logout(JWToken jwToken) {
         try {

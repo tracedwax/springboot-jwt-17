@@ -10,28 +10,33 @@ import itx.examples.springboot.security.springsecurity.jwt.services.dto.UserData
 import java.util.Optional;
 
 /**
- * Service controlling user access.
+ * Service interface for managing user access and JWTs. This service provides methods for user login,
+ * JWT validation, and session invalidation (logout).
  */
 public interface UserAccessService {
 
     /**
-     * User login action, starts client session and issues JWT for client.
-     * @param loginRequest username / password login request.
-     * @return {@link UserData} containing roles and JWT.
+     * Attempts to log in a user with the provided credentials.  If successful, a new JWT is generated
+     * and returned along with user data.
+     * @param loginRequest The login request containing user ID and password.
+     * @return An Optional containing the UserData object (including the generated JWT) if login is successful;
+     *         otherwise, Optional.empty().
      */
     Optional<UserData> login(LoginRequest loginRequest);
 
     /**
-     * Verify if provided token has been issued properly and is correctly signed.
-     * @param jwToken base64 encoded JWT/JWS token.
-     * @return {@link Jws<Claims>} or empty if provided token is invalid.
+     * Validates a JWT token.  This method verifies the token's signature and checks its validity.
+     * @param jwToken The JWT token to validate.
+     * @return An Optional containing the Jws object with Claims if the token is valid; otherwise, Optional.empty().
      */
     Optional<Jws<Claims>> validate(JWToken jwToken);
 
     /**
-     * Invalidate client session before JWT expires.
-     * @param jwToken provided token is used to get user's identity and invalidate client's session.
-     * @return true if login was ok, false otherwise.
+     * Invalidates a user's session by removing their associated key from the KeyStore cache.  This
+     * effectively renders any JWT associated with that session invalid, even if it hasn't expired.
+     * @param jwToken The JWT token associated with the session to invalidate.  The token is used to identify
+     *                the user whose session should be ended.
+     * @return True if the logout was successful (key removed from cache), false otherwise.
      */
     boolean logout(JWToken jwToken);
 
