@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id 'java'
+	id 'pmd'
 }
 
 group = 'itx.examples.springboot.security'
@@ -36,4 +37,13 @@ test {
 	testLogging {
 		events "passed", "skipped", "failed"
 	}
+}
+
+pmd {
+	consoleOutput = true
+	toolVersion = "6.55.0"
+	ruleSets = [
+		"category/java/errorprone.xml",
+		"category/java/bestpractices.xml"
+	]
 }
